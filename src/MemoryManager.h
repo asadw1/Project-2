@@ -16,12 +16,14 @@
 //int MemoryBlock[BLOCK_SIZE]= {};
 
 // struct representing the memory block
-typedef struct mem_block{ unsigned int isAllocated, Process_ID; }mem_block;
+// by default here everything init to 0
+// size of this struct = 8 bytes = (2*sizeof(int))
+typedef struct mem_block{ unsigned int isAllocated=0, Process_ID=0; }mem_block;
 
 class MemoryManager
 {
 public:	
-	// functions
+	// functions, similar format as a real malloc() call
 	void* my_malloc(unsigned int size, unsigned int PID);
 	void* my_free(void* ptr);
 
