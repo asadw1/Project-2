@@ -4,27 +4,30 @@
 // Pre-defined block size of 20MB
 // 1 MB = 1024*1024 bytes, so 20MB = 20*1024*1024 bytes
 // an int is 4 bytes. So our block size is = (20*1024*1024)/4 = 5242880
+// divide by 2 again since we are using a struct to represent memory blocks
 
-#define BLOCK_SIZE 5242880 // represents 20MB
+#define BLOCK_SIZE 2621440 // represents 20MB in mem_block-type
 // We need to divide that number up into a static array 
 
 // global memory block with size 20 MB
 // simulated as an array of integers
 // by default empty, so all values are 0
 // when memory gets occupied, all occupied cells of the array set to 1
-int MemoryBlock[BLOCK_SIZE]= {};
+//int MemoryBlock[BLOCK_SIZE]= {};
+
+// struct representing the memory block
+typedef struct mem_block{ unsigned int isAllocated, Process_ID; }mem_block;
 
 class MemoryManager
 {
 public:	
-	void* my_malloc(int size);
+	// functions
+	void* my_malloc(unsigned int size, unsigned int PID);
 	void* my_free(void* ptr);
 
 private:
 	MemoryManager();
 	~MemoryManager();
-	
-
 
 };
 
