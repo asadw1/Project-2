@@ -66,5 +66,11 @@ void* MemoryManager::my_malloc(unsigned int size, unsigned int PID)
 void* MemoryManager::my_free(void* ptr, unsigned int size)
 {
 	unsigned int blockIndex = 0, sizeCount = 0, startIndex = 0;
+	if(ptr == 0 || size == 0)
+	{
+		cout << "\nError: cannot free a slot already empty!"
+			 << "\nWarning: request size is 0\n";
+		return false;
+	}
 	if(ptr){ free(ptr); }
 }
