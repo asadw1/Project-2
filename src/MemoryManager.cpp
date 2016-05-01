@@ -12,11 +12,13 @@ MemoryManager::~MemoryManager()
 	
 }
 
-void* MemoryManager::my_malloc(unsigned int size, unsigned int PID)
-{
 	// call the system’s malloc() function once to request the initial 20MB
 	// size block
-	mem_block *block = (mem_block *)malloc(BLOCK_SIZE);
+	mem_block *block = (mem_block *)malloc(BLOCK_SIZE + sizeof(mem_block));
+
+void* MemoryManager::my_malloc(unsigned int size, unsigned int PID)
+{
+
 	unsigned int blockIndex = 0, sizeCount = 0, startIndex = 0;
 
 	while(blockIndex < BLOCK_SIZE)
@@ -60,8 +62,9 @@ void* MemoryManager::my_malloc(unsigned int size, unsigned int PID)
 }
 
 // This can only run once a process is done, 
-// which is = to the burst time of that process = 0 
-void* MemoryManager::my_free(void* ptr)
+// which is = to the numberCycles of that process = 0 
+void* MemoryManager::my_free(void* ptr, unsigned int size)
 {
-	
+	unsigned int blockIndex = 0, sizeCount = 0, startIndex = 0;
+	if(ptr){ free(ptr); }
 }

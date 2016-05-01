@@ -25,8 +25,7 @@ class MemoryManager
 public:	
 	// functions, similar format as a real malloc() call
 	void* my_malloc(unsigned int size, unsigned int PID);
-	void* my_free(void* ptr);
-
+	void* my_free(void* ptr, unsigned int size);
 private:
 	MemoryManager();
 	~MemoryManager();
