@@ -13,11 +13,11 @@
 #include <vector>
 #include <chrono>
 #include <pthread.h> // because you asked nicely...
-#include <unistd.h>
+#include <unistd.h> //sbrk and brk
 
 using namespace std;
 
-static unsigned char our_memory[1024 * 1024]; //reserve 1 MB for malloc
+static unsigned char our_memory[20 * 1024 * 1024]; //reserve 1 MB for malloc
 static size_t next_index = 0;
 
 void *my_malloc(size_t sz)
@@ -36,12 +36,14 @@ void my_free(void *mem)
 {
     if(mem)
     {
-        free(mem);
+        sbrk(sizeof((long unsigned int*)mem+1) - sizeof((long unsigned int*)&our_memory[next_index]));
+        // test statement
+        //cout << "\n> Amount of free memory in block: " << (sizeof(our_memory)/sizeof(*our_memory)) << " bytes" << endl;
     } 
-    else 
-    {
-        cout << "\nInvalid function parameter!\n";
-    }
+   // else 
+   //{
+   //     cout << "\nInvalid function parameter!\n";
+   // }
 }
 
 
@@ -130,6 +132,7 @@ Starting process 0
 *   NOTE: Ignore all work done inside the MemoryManager class functions
 *   Abandoning OOP in favor of C-style functions
 */
+
 int memorySimulatePartTwo(ProcessSet process_set) 
 {
     
