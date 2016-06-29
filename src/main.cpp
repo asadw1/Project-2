@@ -12,7 +12,6 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
-#include <pthread.h> // because you asked nicely...
 #include <unistd.h> //sbrk and brk
 #include <cstdlib>  // error-checking in malloc and free
 using namespace std;
@@ -21,26 +20,31 @@ using namespace std;
 
    /* Initial memory allocation */
 
-// Globals   
+// Globals
+#define MAX_DATA 1024   
+char pointers[MAX_DATA];
 unsigned char *MemoryBlock;
 static size_t next_index = 0;
 char ast = '*';
-
+int _20mb = 20971520/4; 
+int currentOffset = 0;
+int sizes[MAX_DATA];
+int ptrNum = 0;
 //-------------------------------------------------
 
-void *my_malloc(size_t sz)
+inline void *my_malloc(int numBytes)
 {
     // dynamically allocate a char array of size 20*1024*1024
     // using malloc. This is our memory block.
     // why compiler continues to enforce void* explicit casts, idk!!
-    MemoryBlock = (unsigned char*)malloc(20*1024*1024);
+    //MemoryBlock = (unsigned char*)malloc(20*1024*1024);
 
     // logic: 
     // a '*' indicates 1 MB. So each process's memory footprint
     // needs to correspond to a number of asterisks. 
 
     // if a process requests more than 20MB, then what?
-    void *mem;
+/*    void *mem;
     
     cout << "\n> Amount of free memory in block: " << (sizeof(MemoryBlock)) << " bytes" << endl;
 
@@ -50,24 +54,35 @@ void *my_malloc(size_t sz)
 
     mem = &MemoryBlock[next_index];
     next_index += sz;
-    return mem;
+    return mem;*/
+   // errno = ENOMEM;
+    //return NULL;
+
+    char *ptr = pointers + currentOffset;
+
+    currentOffset += numBytes;
+
+    if (currentOffset >= MAX_DATA)
+        return NULL;
+
+    sizes[ptrNum++] = numBytes;
+
+    return ptr;
 }
 
 //-----------------------------------------------------
 
 void my_free(void *mem)
 {
-    if(mem)
-    {   // make sure to pass a negative 
-        // value to sbrk to simualte deallocation on the heap 
-        sbrk(sizeof((long unsigned int*)mem+1) - sizeof((long unsigned int*)&MemoryBlock[next_index]));
-        //test statement
-        //cout << "\n> Amount of free memory in block: " << (sizeof(MemoryBlock)/sizeof(*MemoryBlock)) << " bytes" << endl;
+  /*  if(mem)
+    {
+        free(mem);   
     } 
    // else 
    //{
    //     cout << "\nInvalid function parameter!\n";
-   // }
+   // }*/
+   currentOffset -= sizes[ptrNum--]; 
 }
 
 //-------------------------------------------------------
@@ -161,7 +176,7 @@ int memorySimulatePartTwo(ProcessSet process_set)
     
     cout << "Starting Memory Simulation Part Two" << endl;
     
-        MemoryBlock = (unsigned char *) malloc(20 * 1024 * 1024);
+    MemoryBlock = (unsigned char *) malloc(20 * 1024 * 1024);
     
     auto totalTimeStart = chrono::high_resolution_clock::now();
     
@@ -177,10 +192,10 @@ int memorySimulatePartTwo(ProcessSet process_set)
         cout << "Starting process " << currentProcess.processId << endl;
         
         int memoryFootPrintForCurrentProcess = currentProcess.memoryFootprint;
-        
+        cout << "first process mem footprint: " << currentProcess.memoryFootprint << endl;
         // Allocate memory for this process
         allocatedMemory = my_malloc(memoryFootPrintForCurrentProcess * 1024); // The memory footprint is in KB
-        
+        printf("\nalloc pointer value:%p\n", allocatedMemory);
         if (allocatedMemory == NULL) 
         {
             cout << "Error allocating memory for process with process ID " << currentProcess.processId << endl ;
